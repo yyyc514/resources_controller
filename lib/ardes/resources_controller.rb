@@ -683,7 +683,7 @@ module Ardes#:nodoc:
         
         if resource_specification_map[segment]
           spec = resource_specification_map[segment]
-          spec = returning(spec.dup) {|s| s.as = as} if as
+          spec = spec.dup.tap {|s| s.as = as} if as
         else
           begin
             spec = Specification.new(singleton ? segment : segment.singularize, :singleton => singleton, :as => as)
@@ -715,7 +715,7 @@ module Ardes#:nodoc:
          
       def load_enclosing_resource_from_specification(spec)
         spec.segment == nesting_segments[enclosing_resources.size][:segment] or ResourcesController.raise_resource_mismatch(self)
-        returning spec.find_from(self) do |resource|
+        spec.find_from(self).tap do |resource|
           add_enclosing_resource(resource, :name => spec.name, :name_prefix => spec.name_prefix, :is_singleton => spec.singleton?, :as => spec.as)
         end
       end
